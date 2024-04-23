@@ -10,6 +10,8 @@ const numCHOICES = {
     2 : "Scissors"
 };
 
+const SCORETOWIN = 3;
+
 let humanScore = 0;
 let computerScore = 0;
 
@@ -82,7 +84,7 @@ function updateScore() {
 }
 
 function checkForWinner() {
-    if(humanScore + computerScore === 5){
+    if(humanScore == SCORETOWIN || computerScore == SCORETOWIN){
         alertWinner();
         hideButtons();
     }
