@@ -10,6 +10,9 @@ const numCHOICES = {
     2 : "Scissors"
 };
 
+const SCORETOWIN = 3;
+
+
 let humanScore = 0;
 let computerScore = 0;
 
@@ -17,6 +20,7 @@ const buttonContainer = document.querySelector(".container");
 const roundOutbox = document.querySelector(".round-out");
 const scoreOutbox = document.querySelector(".score-out");
 const resetButton = document.createElement("button");
+resetButton.classList.add("reset");
 
 resetButton.addEventListener("click",() => {
     resetScores();
@@ -29,8 +33,7 @@ scoreOutbox.textContent="0-0";
 resetButton.textContent="Start New Game";
 hideReset();
 
-buttonContainer.appendChild(scoreOutbox);
-buttonContainer.appendChild(resetButton);
+document.body.appendChild(resetButton);
 
 function getComputerChoice() {
     return Math.floor(Math.random() * 3);
@@ -78,11 +81,11 @@ function alertWinner(){
 }
 
 function updateScore() {
-    scoreOutbox.textContent = `${humanScore} to ${computerScore}`;
+    scoreOutbox.textContent = `${humanScore}-${computerScore}`;
 }
 
 function checkForWinner() {
-    if(humanScore + computerScore === 5){
+    if(humanScore == SCORETOWIN || computerScore == SCORETOWIN){
         alertWinner();
         hideButtons();
     }
@@ -94,6 +97,11 @@ for(let key in numCHOICES) {
     const choice = numCHOICES[key].toLowerCase();
     button.textContent = choice;
     button.id = `${choice}-button`; // Assign ID based on choice
+
+    let imglink = `./images/${choice}-button.png`;
+    button.style.backgroundImage = `url(${imglink})`;
+    button.style.backgroundSize = 'cover';
+
     buttonContainer.appendChild(button);
     button.addEventListener("click", (event) =>  {
         roundOutbox.textContent = playRound(getHumanChoice(event.target.textContent), getComputerChoice() );
@@ -110,7 +118,7 @@ function showButtons() {
     for (let key in numCHOICES) {
         const choice = numCHOICES[key].toLowerCase();
         const button = document.querySelector(`#${choice}-button`);
-        button.style.visibility = "visible";
+        button.style.display = "flex";
     }
     hideReset();
 }
@@ -120,16 +128,16 @@ function hideButtons() {
     for (let key in numCHOICES) {
         const choice = numCHOICES[key].toLowerCase();
         const button = document.querySelector(`#${choice}-button`);
-        button.style.visibility = "hidden";
+        button.style.display = "none";
     }
     showReset();
 }
 
 
 function hideReset() {
-    resetButton.style.visibility ="hidden";
+    resetButton.style.display ="none";
 }
 
 function showReset() {
-    resetButton.style.visibility ="visible";
+    resetButton.style.display ="block";
 }
