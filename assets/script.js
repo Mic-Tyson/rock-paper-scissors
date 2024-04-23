@@ -10,12 +10,34 @@ const numCHOICES = {
     2 : "Scissors"
 };
 
+let humanScore = 0;
+let computerScore = 0;
+
+const buttonContainer = document.querySelector(".container");
+const roundOutbox = document.querySelector(".round-out");
+const scoreOutbox = document.querySelector(".score-out");
+const resetButton = document.createElement("button");
+
+resetButton.addEventListener("click",() => {
+    resetScores();
+    hideReset();
+    showButtons();
+    
+});
+
+scoreOutbox.textContent="0-0";
+resetButton.textContent="Start New Game";
+hideReset();
+
+buttonContainer.appendChild(scoreOutbox);
+buttonContainer.appendChild(resetButton);
+
 function getComputerChoice() {
     return Math.floor(Math.random() * 3);
 }
 
-function getHumanChoice() {
-    return CHOICES[prompt("Rock, Paper, Scissors!").toLowerCase()];
+function getHumanChoice(choice) { //switched from prompt to allow for buttons function
+    return CHOICES[choice.toLowerCase()];
 }
 
 function calcWinner(humanChoice, computerChoice) {  // Extracted from playRound for readability 
@@ -28,30 +50,86 @@ function calcWinner(humanChoice, computerChoice) {  // Extracted from playRound 
     }
 }
 
-function playGame(){
-
-    let humanScore = 0;
-    let computerScore = 0;
-
-    function playRound(humanChoice, computerChoice) {  
-        switch(calcWinner(humanChoice, computerChoice))  {
-        case -1: {
-            computerScore++;
-            return `You lose! ${numCHOICES[humanChoice]} loses to ${numCHOICES[computerChoice]} `; 
-        }
-        case 0: {
-            return "It's a tie!";
-        }
-        case 1: {
-            humanScore++;
-            return `You win! ${numCHOICES[humanChoice]} beats ${numCHOICES[computerChoice]} `;
-        }
-        }
+function playRound(humanChoice, computerChoice) {  
+    switch(calcWinner(humanChoice, computerChoice))  {
+    case -1: {
+        computerScore++;
+        return `You lose! ${numCHOICES[humanChoice]} loses to ${numCHOICES[computerChoice]} `; 
     }
-
-    for(let i = 0; i<5; ++i) playRound(getHumanChoice(), getComputerChoice());
-
-    prompt(humanScore > computerScore ? `You win! ${humanScore} to ${computerScore}` : `You lost. ${humanScore} to ${computerScore}`);
+    case 0: {
+        return "It's a tie!";
+    }
+    case 1: {
+        humanScore++;
+        return `You win! ${numCHOICES[humanChoice]} beats ${numCHOICES[computerChoice]} `;
+    }
+    }
 }
 
-playGame();
+function resetScores(){
+    humanScore = 0;
+    computerScore = 0;
+    updateScore();
+    roundOutbox.textContent = "";
+}
+
+function alertWinner(){
+    roundOutbox.textContent = (humanScore > computerScore ? `You win! ${humanScore} to ${computerScore}` : `You lost. ${humanScore} to ${computerScore}`);
+}
+
+function updateScore() {
+    scoreOutbox.textContent = `${humanScore} to ${computerScore}`;
+}
+
+function checkForWinner() {
+    if(humanScore + computerScore === 5){
+        alertWinner();
+        hideButtons();
+    }
+}
+
+// Create the 3 choice buttons and assign ids eg "Rock-button"
+for(let key in numCHOICES) {
+    const button = document.createElement("button");
+    const choice = numCHOICES[key].toLowerCase();
+    button.textContent = choice;
+    button.id = `${choice}-button`; // Assign ID based on choice
+    buttonContainer.appendChild(button);
+    button.addEventListener("click", (event) =>  {
+        roundOutbox.textContent = playRound(getHumanChoice(event.target.textContent), getComputerChoice() );
+        updateScore();
+        checkForWinner();
+    })
+  
+};
+
+
+// Function to hide all choice buttons
+function showButtons() {
+
+    for (let key in numCHOICES) {
+        const choice = numCHOICES[key].toLowerCase();
+        const button = document.querySelector(`#${choice}-button`);
+        button.style.visibility = "visible";
+    }
+    hideReset();
+}
+
+// Function to hide all choice buttons
+function hideButtons() {
+    for (let key in numCHOICES) {
+        const choice = numCHOICES[key].toLowerCase();
+        const button = document.querySelector(`#${choice}-button`);
+        button.style.visibility = "hidden";
+    }
+    showReset();
+}
+
+
+function hideReset() {
+    resetButton.style.visibility ="hidden";
+}
+
+function showReset() {
+    resetButton.style.visibility ="visible";
+}
